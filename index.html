@@ -1,553 +1,1217 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#080d18">
-  <meta name="description" content="Alexza's developer portfolio. Android apps, games, software and AI experiments.">
-  <title>Alexza | Developer Portfolio</title>
+  <meta name="description" content="Alexza's developer portfolio — Android applications, games, software, and local AI experiments.">
+  <meta name="author" content="Alexza">
+  <title>Alexza — Developer Portfolio</title>
 
   <style>
     :root {
+      color-scheme: dark;
       --bg: #080d18;
+      --bg-soft: #0c1422;
       --panel: #101a2b;
-      --panel2: #142238;
+      --panel-strong: #142238;
       --text: #eaf2ff;
       --muted: #91a2ba;
+      --muted-strong: #b8c7dc;
       --accent: #53d9ed;
-      --accent2: #718bff;
-      --border: rgba(148, 181, 220, .15);
+      --accent-blue: #718bff;
+      --border: rgba(148, 181, 220, 0.16);
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.35);
+      --radius: 18px;
+      --container: 1100px;
     }
 
-    * {
-      margin: 0;
-      padding: 0;
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
     }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 90px;
+    }
 
     body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      line-height: 1.7;
+      min-width: 320px;
+      margin: 0;
       overflow-x: hidden;
+      background:
+        radial-gradient(circle at 88% 13%, rgba(69, 111, 255, 0.10), transparent 28rem),
+        radial-gradient(circle at 8% 42%, rgba(48, 195, 220, 0.055), transparent 25rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Roboto, Arial, sans-serif;
+      line-height: 1.7;
     }
 
-    a { color: inherit; text-decoration: none; }
+    body.modal-open {
+      overflow: hidden;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    button:focus-visible,
+    a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 4px;
+    }
 
     .container {
-      width: min(1100px, 90%);
-      margin: auto;
+      width: min(var(--container), calc(100% - 48px));
+      margin-inline: auto;
     }
 
-    header {
+    .site-header {
       position: sticky;
       top: 0;
-      z-index: 10;
-      background: rgba(8, 13, 24, .86);
-      backdrop-filter: blur(16px);
+      z-index: 50;
       border-bottom: 1px solid var(--border);
+      background: rgba(8, 13, 24, 0.86);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
     }
 
-    nav {
-      min-height: 75px;
+    .navbar {
+      min-height: 74px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 24px;
     }
 
-    .logo {
+    .brand {
+      flex-shrink: 0;
       font-size: 22px;
-      font-weight: 800;
+      font-weight: 850;
       letter-spacing: 2px;
     }
 
-    .logo span { color: var(--accent); }
+    .brand span {
+      color: var(--accent);
+    }
 
     .nav-links {
       display: flex;
+      align-items: center;
       gap: 30px;
       color: var(--muted);
       font-size: 14px;
     }
 
-    .nav-links a:hover { color: var(--accent); }
+    .nav-links a {
+      transition: color 180ms ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="location"] {
+      color: var(--accent);
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel);
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .menu-toggle svg {
+      width: 20px;
+      height: 20px;
+    }
 
     .hero {
       min-height: 590px;
       display: flex;
       align-items: center;
       position: relative;
+      isolation: isolate;
       overflow: hidden;
     }
 
-    .glow {
+    .hero::before,
+    .hero::after {
+      content: "";
       position: absolute;
-      width: 450px;
-      height: 450px;
-      border-radius: 50%;
-      background: rgba(48, 123, 255, .12);
-      filter: blur(100px);
-      right: -100px;
-      top: 50px;
+      z-index: -1;
       pointer-events: none;
+      border-radius: 50%;
+      filter: blur(2px);
+    }
+
+    .hero::before {
+      width: 480px;
+      height: 480px;
+      right: -110px;
+      top: 10px;
+      background: radial-gradient(circle, rgba(75, 116, 255, 0.19), transparent 68%);
+    }
+
+    .hero::after {
+      width: 360px;
+      height: 360px;
+      left: -190px;
+      bottom: -180px;
+      background: radial-gradient(circle, rgba(55, 208, 225, 0.12), transparent 70%);
     }
 
     .hero-content {
-      position: relative;
-      max-width: 760px;
-      padding: 90px 0;
+      max-width: 790px;
+      padding-block: 100px;
+      animation: rise-in 800ms ease both;
     }
 
-    .eyebrow {
+    .eyebrow,
+    .section-kicker {
       color: var(--accent);
-      font-size: 13px;
+      font-size: 12px;
+      font-weight: 700;
       letter-spacing: 3px;
       text-transform: uppercase;
-      margin-bottom: 18px;
     }
 
-    h1 {
-      font-size: clamp(42px, 7vw, 76px);
-      line-height: 1.12;
-      letter-spacing: -3px;
-      margin-bottom: 24px;
+    .hero h1 {
+      margin: 18px 0 22px;
+      font-size: clamp(44px, 7.4vw, 78px);
+      line-height: 1.08;
+      letter-spacing: -3.5px;
     }
 
-    h1 span {
-      background: linear-gradient(90deg, var(--accent), var(--accent2));
+    .gradient-text {
+      background: linear-gradient(95deg, var(--accent), var(--accent-blue));
       -webkit-background-clip: text;
       background-clip: text;
       color: transparent;
     }
 
     .hero-description {
-      max-width: 570px;
-      color: var(--muted);
+      max-width: 600px;
+      margin: 0 0 32px;
+      color: var(--muted-strong);
       font-size: 17px;
-      margin-bottom: 32px;
     }
 
-    .buttons {
+    .button-row {
       display: flex;
       flex-wrap: wrap;
-      gap: 14px;
+      gap: 13px;
     }
 
-    .btn {
+    .button {
+      min-height: 48px;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 12px 23px;
-      border-radius: 9px;
-      font-weight: 650;
+      gap: 9px;
+      padding: 11px 22px;
+      border: 1px solid transparent;
+      border-radius: 10px;
       font-size: 14px;
-      transition: .25s;
+      font-weight: 750;
+      transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+      cursor: pointer;
     }
 
-    .btn-primary {
+    .button:hover {
+      transform: translateY(-3px);
+    }
+
+    .button-primary {
       background: linear-gradient(110deg, #36bed6, #6485ff);
       color: #06101b;
+      box-shadow: 0 9px 30px rgba(72, 157, 235, 0.16);
     }
 
-    .btn-secondary {
-      border: 1px solid var(--border);
-      background: var(--panel);
+    .button-secondary {
+      border-color: var(--border);
+      background: rgba(16, 26, 43, 0.9);
+      color: var(--text);
     }
 
-    .btn:hover { transform: translateY(-3px); }
+    .button-secondary:hover {
+      border-color: rgba(83, 217, 237, 0.55);
+    }
 
-    section { padding: 85px 0; }
+    section.content-section {
+      padding-block: 82px;
+    }
 
     .section-heading {
-      margin-bottom: 36px;
-    }
-
-    .section-heading small {
-      color: var(--accent);
-      letter-spacing: 3px;
-      text-transform: uppercase;
-      font-size: 12px;
+      margin-bottom: 34px;
     }
 
     .section-heading h2 {
-      font-size: clamp(29px, 4vw, 40px);
-      margin-top: 8px;
+      margin: 8px 0 7px;
+      font-size: clamp(30px, 4vw, 42px);
+      line-height: 1.2;
+      letter-spacing: -1px;
     }
 
     .section-heading p {
+      max-width: 650px;
+      margin: 0;
       color: var(--muted);
-      margin-top: 8px;
+      font-size: 15px;
     }
 
-    .projects {
+    .projects-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 20px;
     }
 
     .project-card {
-      background: linear-gradient(145deg, var(--panel), #0c1525);
+      min-width: 0;
+      overflow: hidden;
+      padding: 18px;
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 25px;
-      transition: .3s;
+      border-radius: var(--radius);
+      background: linear-gradient(145deg, rgba(16, 26, 43, 0.98), rgba(10, 19, 33, 0.98));
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.12);
+      transition: transform 220ms ease, border-color 220ms ease, box-shadow 220ms ease;
     }
 
     .project-card:hover {
-      transform: translateY(-6px);
-      border-color: rgba(83, 217, 237, .55);
+      transform: translateY(-5px);
+      border-color: rgba(83, 217, 237, 0.48);
+      box-shadow: 0 19px 42px rgba(0, 0, 0, 0.24);
     }
 
-    .project-top {
+    .project-preview {
+      min-height: 155px;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      overflow: hidden;
+      margin-bottom: 18px;
+      border: 1px solid rgba(255, 255, 255, 0.09);
+      border-radius: 12px;
+      text-align: center;
+      isolation: isolate;
+    }
+
+    .project-preview::before,
+    .project-preview::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .project-preview::before {
+      width: 220px;
+      height: 220px;
+      background: rgba(255, 255, 255, 0.10);
+      filter: blur(34px);
+    }
+
+    .project-preview::after {
+      width: 180px;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.35);
+      transform: rotate(-28deg);
+      box-shadow: 0 0 24px rgba(255, 255, 255, 0.3);
+    }
+
+    .project-preview strong {
+      position: relative;
+      font-size: clamp(22px, 3vw, 30px);
+      font-weight: 900;
+      letter-spacing: 2px;
+      line-height: 1.2;
+    }
+
+    .project-preview small {
+      position: relative;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+    }
+
+    .preview-photokb {
+      background: linear-gradient(135deg, #123e55, #146b83 52%, #132d55);
+    }
+
+    .preview-aira {
+      background: linear-gradient(135deg, #171b43, #354a88 55%, #101a32);
+    }
+
+    .preview-courtroom {
+      background: linear-gradient(135deg, #34231e, #71513a 55%, #201d2c);
+    }
+
+    .preview-editor {
+      background: linear-gradient(135deg, #321d50, #6542a0 55%, #152d54);
+    }
+
+    .preview-rpg {
+      background: linear-gradient(135deg, #182f2c, #315e50 55%, #17243c);
+    }
+
+    .project-meta {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      margin-bottom: 23px;
+      gap: 12px;
+      margin-bottom: 13px;
     }
 
     .project-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 13px;
+      width: 46px;
+      height: 46px;
       display: grid;
       place-items: center;
-      background: var(--panel2);
-      font-size: 26px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--panel-strong);
+      font-size: 23px;
     }
 
     .status {
+      display: inline-flex;
+      align-items: center;
+      max-width: 65%;
+      padding: 5px 10px;
+      border: 1px solid rgba(83, 217, 237, 0.18);
+      border-radius: 999px;
+      background: rgba(83, 217, 237, 0.08);
       color: var(--accent);
-      background: rgba(83, 217, 237, .09);
-      border: 1px solid rgba(83, 217, 237, .2);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 30px;
+      font-size: 10px;
+      font-weight: 750;
+      line-height: 1.4;
+      text-align: center;
     }
 
-    .project-card h3 { font-size: 21px; }
+    .project-card h3 {
+      margin: 0;
+      font-size: 21px;
+      line-height: 1.35;
+    }
 
-    .project-card p {
+    .project-card > p {
+      min-height: 72px;
+      margin: 9px 0 17px;
       color: var(--muted);
-      margin: 10px 0 20px;
-      font-size: 14px;
+      font-size: 13px;
     }
 
     .tags {
       display: flex;
-      gap: 8px;
       flex-wrap: wrap;
+      gap: 7px;
     }
 
     .tag {
-      background: rgba(112, 146, 190, .1);
-      color: #b5c6dc;
-      padding: 5px 10px;
+      padding: 4px 9px;
+      border: 1px solid rgba(148, 181, 220, 0.10);
       border-radius: 6px;
-      font-size: 11px;
+      background: rgba(112, 146, 190, 0.09);
+      color: #b5c6dc;
+      font-size: 10px;
+    }
+
+    .details-button {
+      width: 100%;
+      min-height: 43px;
+      margin-top: 20px;
+      padding: 10px 13px;
+      border: 1px solid rgba(83, 217, 237, 0.25);
+      border-radius: 9px;
+      background: rgba(83, 217, 237, 0.07);
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 750;
+      cursor: pointer;
+      transition: background 180ms ease, border-color 180ms ease, transform 180ms ease;
+    }
+
+    .details-button:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+      background: rgba(83, 217, 237, 0.14);
     }
 
     .about-panel {
-      background: linear-gradient(120deg, var(--panel), #0d1727);
-      border: 1px solid var(--border);
-      border-radius: 18px;
       padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: linear-gradient(120deg, rgba(16, 26, 43, 0.98), rgba(13, 23, 39, 0.98));
+    }
+
+    .about-panel h3 {
+      margin: 0;
+      font-size: 23px;
     }
 
     .about-panel p {
+      max-width: 820px;
+      margin: 13px 0 0;
       color: var(--muted);
-      margin-top: 14px;
-      max-width: 800px;
+      font-size: 14px;
     }
 
-    .skills {
+    .skills-grid {
       display: grid;
-      grid-template-columns: repeat(4, 1fr);
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 13px;
     }
 
-    .skill {
-      text-align: center;
-      padding: 20px 10px;
+    .skill-card {
+      min-height: 112px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      padding: 17px 10px;
       border: 1px solid var(--border);
-      background: var(--panel);
       border-radius: 12px;
-      font-size: 14px;
-      transition: .25s;
+      background: var(--panel);
+      color: var(--muted-strong);
+      font-size: 13px;
+      text-align: center;
+      transition: transform 180ms ease, border-color 180ms ease;
     }
 
-    .skill:hover {
-      border-color: var(--accent);
+    .skill-card:hover {
       transform: translateY(-3px);
+      border-color: rgba(83, 217, 237, 0.45);
     }
 
-    .skill span {
-      display: block;
-      font-size: 25px;
-      margin-bottom: 8px;
+    .skill-card span {
+      font-size: 26px;
+      line-height: 1;
     }
 
     .contact-panel {
-      text-align: center;
       padding: 55px 25px;
-      border-radius: 18px;
-      background: linear-gradient(130deg, #11253b, #111c32);
       border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(83, 217, 237, 0.12), transparent 55%),
+        linear-gradient(130deg, #11253b, #111c32);
+      text-align: center;
+    }
+
+    .contact-panel h2 {
+      margin: 10px 0;
+      font-size: clamp(28px, 4vw, 40px);
     }
 
     .contact-panel p {
+      max-width: 580px;
+      margin: 0 auto 24px;
       color: var(--muted);
-      margin: 13px auto 25px;
+      font-size: 14px;
     }
 
-    footer {
+    .site-footer {
+      padding-block: 25px;
       border-top: 1px solid var(--border);
-      padding: 25px 0;
       color: var(--muted);
-      text-align: center;
       font-size: 12px;
+      text-align: center;
     }
 
-    .hidden { display: none; }
-
-    @media(max-width: 650px) {
-      .nav-links { gap: 13px; font-size: 12px; }
-      .projects { grid-template-columns: 1fr; }
-      .skills { grid-template-columns: repeat(2, 1fr); }
-      .hero { min-height: 520px; }
-      h1 { letter-spacing: -1.5px; }
-      section { padding: 65px 0; }
+    /* Project details modal */
+    .project-dialog {
+      width: min(590px, calc(100% - 28px));
+      max-width: none;
+      max-height: min(86vh, 760px);
+      margin: auto;
+      padding: 0;
+      overflow: auto;
+      border: 1px solid rgba(83, 217, 237, 0.32);
+      border-radius: 18px;
+      background: #101a2b;
+      color: var(--text);
+      box-shadow: var(--shadow);
     }
 
-    @media(max-width: 380px) {
-      .logo { font-size: 17px; }
-      .nav-links { gap: 9px; font-size: 11px; }
+    .project-dialog::backdrop {
+      background: rgba(1, 5, 12, 0.82);
+      backdrop-filter: blur(7px);
+      -webkit-backdrop-filter: blur(7px);
+    }
+
+    .dialog-content {
+      position: relative;
+      padding: 31px;
+    }
+
+    .dialog-close {
+      position: absolute;
+      top: 17px;
+      right: 17px;
+      width: 39px;
+      height: 39px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel-strong);
+      color: var(--text);
+      font-size: 23px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .dialog-close:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .dialog-kicker {
+      margin: 0 48px 10px 0;
+      color: var(--accent);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+    }
+
+    .dialog-content h2 {
+      margin: 0 45px 0 0;
+      font-size: clamp(25px, 5vw, 34px);
+      line-height: 1.25;
+    }
+
+    .dialog-description {
+      margin: 15px 0 23px;
+      color: var(--muted-strong);
+      font-size: 14px;
+    }
+
+    .dialog-info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 11px;
+      margin-bottom: 19px;
+    }
+
+    .dialog-info-item {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--panel-strong);
+    }
+
+    .dialog-info-item small {
+      color: var(--accent);
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
+
+    .dialog-info-item p {
+      margin: 5px 0 0;
+      color: var(--text);
+      font-size: 13px;
+      overflow-wrap: anywhere;
+    }
+
+    .dialog-features-title {
+      margin: 18px 0 8px;
+      font-size: 13px;
+    }
+
+    .dialog-features {
+      margin: 0 0 21px;
+      padding-left: 19px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .dialog-features li + li {
+      margin-top: 5px;
+    }
+
+    .dialog-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .dialog-note {
+      margin: 17px 0 0;
+      color: var(--muted);
+      font-size: 11px;
+    }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 650ms ease, transform 650ms ease;
+    }
+
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .reveal {
+        opacity: 1;
+        transform: none;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .container {
+        width: min(var(--container), calc(100% - 36px));
+      }
+
+      .menu-toggle {
+        display: inline-flex;
+      }
+
+      .navbar {
+        min-height: 68px;
+      }
+
+      .nav-links {
+        position: absolute;
+        top: calc(100% + 1px);
+        left: 0;
+        right: 0;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px 18px 15px;
+        border-bottom: 1px solid var(--border);
+        background: rgba(8, 13, 24, 0.98);
+      }
+
+      .nav-links.is-open {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 11px 4px;
+      }
+
+      .hero {
+        min-height: 530px;
+      }
+
+      .hero-content {
+        padding-block: 82px;
+      }
+
+      .hero h1 {
+        letter-spacing: -2px;
+      }
+
+      section.content-section {
+        padding-block: 66px;
+      }
+
+      .projects-grid {
+        gap: 15px;
+      }
+
+      .project-card {
+        padding: 14px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .projects-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .project-card > p {
+        min-height: auto;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .hero-description {
+        font-size: 15px;
+      }
+
+      .about-panel {
+        padding: 23px;
+      }
+
+      .dialog-content {
+        padding: 25px 20px;
+      }
+
+      .dialog-info-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 370px) {
+      .container {
+        width: calc(100% - 28px);
+      }
+
+      .brand {
+        font-size: 19px;
+      }
+
+      .hero h1 {
+        font-size: 42px;
+      }
+
+      .button-row .button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
+  <header class="site-header">
+    <div class="container navbar">
+      <a class="brand" href="#home" aria-label="Alexza home">ALEXZA<span>.</span></a>
 
-<header>
-  <div class="container">
-    <nav>
-      <a href="#home" class="logo">ALEXZA<span>.</span></a>
+      <button class="menu-toggle" id="menuToggle" type="button"
+              aria-label="Open navigation menu" aria-expanded="false"
+              aria-controls="navLinks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16M4 12h16M4 17h16"></path>
+        </svg>
+      </button>
 
-      <div class="nav-links">
+      <nav class="nav-links" id="navLinks" aria-label="Main navigation">
         <a href="#home">Home</a>
         <a href="#projects">Projects</a>
         <a href="#about">About</a>
+        <a href="#skills">Skills</a>
         <a href="#contact">Contact</a>
-      </div>
-    </nav>
-  </div>
-</header>
+      </nav>
+    </div>
+  </header>
 
-<main>
-  <section class="hero" id="home">
-    <div class="glow"></div>
-
-    <div class="container">
-      <div class="hero-content">
-        <div class="eyebrow">Independent Developer</div>
-
-        <h1>
-          Building Ideas<br>
-          Into <span>Reality.</span>
-        </h1>
-
-        <p class="hero-description">
-          Hello, I'm Alexza. I build Android applications,
-          explore game development, experiment with AI,
-          and turn creative ideas into real projects.
-        </p>
-
-        <div class="buttons">
-          <a href="#projects" class="btn btn-primary">
-            Explore Projects ↗
-          </a>
-
-          <a href="https://github.com/memegame0011-creator"
-             target="_blank" rel="noopener"
-             class="btn btn-secondary">
-            My GitHub ↗
-          </a>
+  <main>
+    <section class="hero" id="home">
+      <div class="container">
+        <div class="hero-content">
+          <div class="eyebrow">Independent Developer</div>
+          <h1>Building Ideas<br>Into <span class="gradient-text">Reality.</span></h1>
+          <p class="hero-description">
+            Hello, I'm Alexza. I build Android applications, explore game development,
+            experiment with artificial intelligence, and turn creative ideas into real projects.
+          </p>
+          <div class="button-row">
+            <a class="button button-primary" href="#projects">Explore Projects <span aria-hidden="true">↗</span></a>
+            <a class="button button-secondary" href="https://github.com/memegame0011-creator"
+               target="_blank" rel="noopener noreferrer">My GitHub <span aria-hidden="true">↗</span></a>
+          </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section id="projects">
-    <div class="container">
-      <div class="section-heading">
-        <small>My Work</small>
-        <h2>Featured Projects</h2>
-        <p>A collection of applications, games, and experiments.</p>
+    <section class="content-section" id="projects">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">My Work</div>
+          <h2>Featured Projects</h2>
+          <p>A collection of applications, games, and experiments built from curiosity and ideas.</p>
+        </div>
+
+        <div class="projects-grid">
+          <article class="project-card reveal">
+            <div class="project-preview preview-photokb" aria-label="PhotoKB project preview">
+              <strong>PhotoKB</strong>
+              <small>IMAGE COMPRESSION</small>
+            </div>
+            <div class="project-meta">
+              <div class="project-icon" aria-hidden="true">📱</div>
+              <span class="status">In Development</span>
+            </div>
+            <h3>PhotoKB</h3>
+            <p>An offline Android utility that compresses photos to a selected maximum file size in KB, without requiring users to understand complex image settings.</p>
+            <div class="tags">
+              <span class="tag">Android</span><span class="tag">Kotlin</span><span class="tag">Utility</span>
+            </div>
+            <button class="details-button" type="button" data-project="photokb">View Project Details ↗</button>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-preview preview-aira" aria-label="Aira AI project preview">
+              <strong>AIRA AI</strong>
+              <small>LOCAL PERSONAL ASSISTANT</small>
+            </div>
+            <div class="project-meta">
+              <div class="project-icon" aria-hidden="true">🤖</div>
+              <span class="status">Active Development</span>
+            </div>
+            <h3>Aira AI</h3>
+            <p>A local personal AI assistant focused on natural conversation, long-term memory, voice interaction, and useful PC capabilities.</p>
+            <div class="tags">
+              <span class="tag">Python</span><span class="tag">Local AI</span><span class="tag">Qwen</span>
+            </div>
+            <button class="details-button" type="button" data-project="aira">View Project Details ↗</button>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-preview preview-courtroom" aria-label="Courtroom project preview">
+              <strong>COURTROOM</strong>
+              <small>INVESTIGATE · ANALYZE · DECIDE</small>
+            </div>
+            <div class="project-meta">
+              <div class="project-icon" aria-hidden="true">⚖️</div>
+              <span class="status">In Development</span>
+            </div>
+            <h3>Courtroom</h3>
+            <p>An Android mystery and courtroom game built around cases, evidence investigation, hints, and player decisions.</p>
+            <div class="tags">
+              <span class="tag">Android</span><span class="tag">Kotlin</span><span class="tag">Game</span>
+            </div>
+            <button class="details-button" type="button" data-project="courtroom">View Project Details ↗</button>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-preview preview-editor" aria-label="Android video editor project preview">
+              <strong>VIDEO EDITOR</strong>
+              <small>CREATE WITHOUT LIMITS</small>
+            </div>
+            <div class="project-meta">
+              <div class="project-icon" aria-hidden="true">🎬</div>
+              <span class="status">Planning</span>
+            </div>
+            <h3>Android Video Editor</h3>
+            <p>An ambitious mobile editing concept focused on anime and beat edits, animated text and logos, and visual effects for video.</p>
+            <div class="tags">
+              <span class="tag">Android</span><span class="tag">Video Editing</span><span class="tag">Creative Tools</span>
+            </div>
+            <button class="details-button" type="button" data-project="editor">View Project Details ↗</button>
+          </article>
+
+          <article class="project-card reveal">
+            <div class="project-preview preview-rpg" aria-label="Floor Adventure RPG project preview">
+              <strong>FLOOR ADVENTURE</strong>
+              <small>RISE · FIGHT · ASCEND</small>
+            </div>
+            <div class="project-meta">
+              <div class="project-icon" aria-hidden="true">⚔️</div>
+              <span class="status">Prototype</span>
+            </div>
+            <h3>Floor Adventure RPG</h3>
+            <p>A 2D fantasy adventure inspired by manhwa system interfaces, with character progression, monsters, floor bosses, and exploration.</p>
+            <div class="tags">
+              <span class="tag">2D</span><span class="tag">RPG</span><span class="tag">Game Design</span>
+            </div>
+            <button class="details-button" type="button" data-project="rpg">View Project Details ↗</button>
+          </article>
+        </div>
       </div>
+    </section>
 
-      <div class="projects">
-
-        <article class="project-card">
-          <div class="project-top">
-            <div class="project-icon">📱</div>
-            <span class="status">In Development</span>
-          </div>
-          <h3>PhotoKB</h3>
+    <section class="content-section" id="about">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">Who Am I?</div>
+          <h2>About Me</h2>
+        </div>
+        <div class="about-panel reveal">
+          <h3>Curious Mind. Creative Builder.</h3>
           <p>
-            An Android utility that compresses images
-            to a selected file size, making photo management easier.
+            I'm an independent developer who enjoys learning by building real projects.
+            My interests range from Android applications and game development to local
+            artificial intelligence and creative software.
           </p>
-          <div class="tags">
-            <span class="tag">Android</span>
-            <span class="tag">Kotlin</span>
-            <span class="tag">Utility</span>
-          </div>
-        </article>
-
-        <article class="project-card">
-          <div class="project-top">
-            <div class="project-icon">🤖</div>
-            <span class="status">In Development</span>
-          </div>
-          <h3>Aira AI</h3>
           <p>
-            A local personal AI assistant focused on
-            natural conversations, memory, voice, and PC tasks.
+            I believe every project begins with curiosity, patience, and the willingness
+            to keep learning. This portfolio is a place to document that journey and share
+            the things I create along the way.
           </p>
-          <div class="tags">
-            <span class="tag">Python</span>
-            <span class="tag">Local AI</span>
-            <span class="tag">Assistant</span>
-          </div>
-        </article>
+        </div>
+      </div>
+    </section>
 
-        <article class="project-card">
-          <div class="project-top">
-            <div class="project-icon">⚖️</div>
-            <span class="status">In Development</span>
-          </div>
-          <h3>Courtroom</h3>
+    <section class="content-section" id="skills">
+      <div class="container">
+        <div class="section-heading reveal">
+          <div class="section-kicker">My Toolkit</div>
+          <h2>Technologies &amp; Tools</h2>
+          <p>Tools and technologies I use or explore while developing my projects.</p>
+        </div>
+        <div class="skills-grid">
+          <div class="skill-card reveal"><span aria-hidden="true">🟣</span>Kotlin</div>
+          <div class="skill-card reveal"><span aria-hidden="true">📱</span>Android Studio</div>
+          <div class="skill-card reveal"><span aria-hidden="true">🐍</span>Python</div>
+          <div class="skill-card reveal"><span aria-hidden="true">☕</span>Java</div>
+          <div class="skill-card reveal"><span aria-hidden="true">🌐</span>HTML &amp; CSS</div>
+          <div class="skill-card reveal"><span aria-hidden="true">🔧</span>Git</div>
+          <div class="skill-card reveal"><span aria-hidden="true">🐙</span>GitHub</div>
+          <div class="skill-card reveal"><span aria-hidden="true">🎨</span>Blender</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="content-section" id="contact">
+      <div class="container">
+        <div class="contact-panel reveal">
+          <div class="section-kicker">Get In Touch</div>
+          <h2>Let's Build Something.</h2>
           <p>
-            An Android mystery and courtroom game
-            built around cases, evidence, and player decisions.
+            Interested in my work? Visit my GitHub profile to explore repositories
+            and follow my development journey.
           </p>
-          <div class="tags">
-            <span class="tag">Android</span>
-            <span class="tag">Kotlin</span>
-            <span class="tag">Game</span>
-          </div>
-        </article>
-
-        <article class="project-card">
-          <div class="project-top">
-            <div class="project-icon">🎬</div>
-            <span class="status">Planning</span>
-          </div>
-          <h3>Android Video Editor</h3>
-          <p>
-            An ambitious mobile editing project
-            exploring animation, effects, text, and video editing.
-          </p>
-          <div class="tags">
-            <span class="tag">Android</span>
-            <span class="tag">Video Editing</span>
-            <span class="tag">Creative Tools</span>
-          </div>
-        </article>
-
-        <article class="project-card">
-          <div class="project-top">
-            <div class="project-icon">⚔️</div>
-            <span class="status">Prototype</span>
-          </div>
-          <h3>Floor Adventure RPG</h3>
-          <p>
-            A fantasy floor-based adventure inspired by
-            manhwa system interfaces, monsters, and bosses.
-          </p>
-          <div class="tags">
-            <span class="tag">Game Development</span>
-            <span class="tag">RPG</span>
-            <span class="tag">2D</span>
-          </div>
-        </article>
-
+          <a class="button button-primary" href="https://github.com/memegame0011-creator"
+             target="_blank" rel="noopener noreferrer">Visit My GitHub ↗</a>
+        </div>
       </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">© <span id="currentYear">2026</span> Alexza. Built with curiosity and code.</div>
+  </footer>
+
+  <dialog class="project-dialog" id="projectDialog" aria-labelledby="dialogTitle">
+    <div class="dialog-content">
+      <button class="dialog-close" id="closeDialog" type="button" aria-label="Close project details">×</button>
+      <p class="dialog-kicker" id="dialogCategory">PROJECT DETAILS</p>
+      <h2 id="dialogTitle">Project title</h2>
+      <p class="dialog-description" id="dialogDescription"></p>
+
+      <div class="dialog-info-grid">
+        <div class="dialog-info-item">
+          <small>TECHNOLOGY</small>
+          <p id="dialogTechnology"></p>
+        </div>
+        <div class="dialog-info-item">
+          <small>STATUS</small>
+          <p id="dialogStatus"></p>
+        </div>
+      </div>
+
+      <h3 class="dialog-features-title">Project focus</h3>
+      <ul class="dialog-features" id="dialogFeatures"></ul>
+
+      <div class="dialog-actions">
+        <a class="button button-primary" href="https://github.com/memegame0011-creator"
+           target="_blank" rel="noopener noreferrer">Visit GitHub ↗</a>
+        <button class="button button-secondary" id="dialogDone" type="button">Close</button>
+      </div>
+      <p class="dialog-note">Individual project repository links and screenshots can be added here when they are ready to be shared.</p>
     </div>
-  </section>
+  </dialog>
 
-  <section id="about">
-    <div class="container">
-      <div class="section-heading">
-        <small>Who Am I?</small>
-        <h2>About Me</h2>
-      </div>
+  <script>
+    "use strict";
 
-      <div class="about-panel">
-        <h3>Curious Mind. Creative Builder.</h3>
-        <p>
-          I'm an independent developer who enjoys learning
-          through building real projects. My interests range
-          from mobile applications and game development to
-          artificial intelligence and creative software.
-        </p>
-        <p>
-          I believe every great project starts with an idea,
-          curiosity, and the willingness to keep improving.
-        </p>
-      </div>
-    </div>
-  </section>
+    const GITHUB_PROFILE = "https://github.com/memegame0011-creator";
 
-  <section id="skills">
-    <div class="container">
-      <div class="section-heading">
-        <small>My Toolkit</small>
-        <h2>Technologies & Tools</h2>
-        <p>Technologies I use and explore in my projects.</p>
-      </div>
+    const projects = {
+      photokb: {
+        title: "PhotoKB",
+        category: "ANDROID APPLICATION",
+        description: "An offline Android photo compression utility. Users choose a maximum target size in KB, and the app works to produce a compressed image that fits their needs without requiring them to understand resolution, DPI, or JPEG quality settings.",
+        technology: "Kotlin, Android Studio",
+        status: "In Development",
+        features: [
+          "Choose a target image size in KB.",
+          "Designed for simple photo compression workflows.",
+          "Offline-first approach for local image processing."
+        ]
+      },
+      aira: {
+        title: "Aira AI",
+        category: "LOCAL ARTIFICIAL INTELLIGENCE",
+        description: "A local personal AI assistant project focused on natural conversation, persistent memory, voice interaction, and useful PC capabilities. The long-term direction is to keep more of the assistant's work running locally on the user's computer.",
+        technology: "Python, Qwen, Local AI",
+        status: "Active Development",
+        features: [
+          "Natural conversational assistant experience.",
+          "Long-term memory experiments.",
+          "Voice interaction and PC-assistance roadmap."
+        ]
+      },
+      courtroom: {
+        title: "Courtroom",
+        category: "ANDROID GAME",
+        description: "A mystery and courtroom game for Android. Players work through cases, inspect evidence, use hints, and make decisions as they try to uncover what happened.",
+        technology: "Kotlin, Android Studio",
+        status: "In Development",
+        features: [
+          "Case-based mystery gameplay.",
+          "Evidence investigation and player decisions.",
+          "Optional hints and rewarded-ad progression concept."
+        ]
+      },
+      editor: {
+        title: "Android Video Editor",
+        category: "CREATIVE SOFTWARE CONCEPT",
+        description: "An ambitious Android video-editing project intended for anime edits, beat edits, animated text and logo work, and visual effects on real video. Its feature set and implementation are still being planned.",
+        technology: "Android Development, Video Editing",
+        status: "Planning",
+        features: [
+          "Anime and beat-editing workflows.",
+          "Animated text and logo concepts.",
+          "Visual effects for video projects."
+        ]
+      },
+      rpg: {
+        title: "Floor Adventure RPG",
+        category: "2D GAME PROTOTYPE",
+        description: "A 2D fantasy floor-based adventure inspired by manhwa system interfaces. The concept includes character progression, monsters, bosses, and advancing through increasingly challenging floors.",
+        technology: "2D Game Design, UI Design",
+        status: "Prototype",
+        features: [
+          "Character levels, stats, and progression.",
+          "Floor exploration with monsters and bosses.",
+          "System-style status, inventory, and mission interfaces."
+        ]
+      }
+    };
 
-      <div class="skills">
-        <div class="skill"><span>🟣</span>Kotlin</div>
-        <div class="skill"><span>📱</span>Android Studio</div>
-        <div class="skill"><span>🐍</span>Python</div>
-        <div class="skill"><span>☕</span>Java</div>
-        <div class="skill"><span>🌐</span>HTML & CSS</div>
-        <div class="skill"><span>🔧</span>Git</div>
-        <div class="skill"><span>🐙</span>GitHub</div>
-        <div class="skill"><span>🎨</span>Blender</div>
-      </div>
-    </div>
-  </section>
+    const menuToggle = document.getElementById("menuToggle");
+    const navLinks = document.getElementById("navLinks");
+    const projectDialog = document.getElementById("projectDialog");
+    const closeDialogButton = document.getElementById("closeDialog");
+    const doneDialogButton = document.getElementById("dialogDone");
 
-  <section id="contact">
-    <div class="container">
-      <div class="contact-panel">
-        <div class="eyebrow">Get In Touch</div>
-        <h2>Let's Build Something.</h2>
-        <p>
-          Interested in my projects? Explore my repositories
-          and follow my development journey.
-        </p>
+    function closeMenu() {
+      if (!menuToggle || !navLinks) return;
+      navLinks.classList.remove("is-open");
+      menuToggle.setAttribute("aria-expanded", "false");
+      menuToggle.setAttribute("aria-label", "Open navigation menu");
+    }
 
-        <a href="https://github.com/memegame0011-creator"
-           target="_blank" rel="noopener"
-           class="btn btn-primary">
-          Visit My GitHub ↗
-        </a>
-      </div>
-    </div>
-  </section>
-</main>
+    if (menuToggle && navLinks) {
+      menuToggle.addEventListener("click", () => {
+        const isOpen = navLinks.classList.toggle("is-open");
+        menuToggle.setAttribute("aria-expanded", String(isOpen));
+        menuToggle.setAttribute("aria-label", isOpen ? "Close navigation menu" : "Open navigation menu");
+      });
 
-<footer>
-  <div class="container">
-    © 2026 Alexza. Built with curiosity and code.
-  </div>
-</footer>
+      navLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", closeMenu);
+      });
 
+      document.addEventListener("click", (event) => {
+        const clickedInsideMenu = navLinks.contains(event.target) || menuToggle.contains(event.target);
+        if (!clickedInsideMenu) closeMenu();
+      });
+    }
+
+    function openProject(projectKey) {
+      const project = projects[projectKey];
+      if (!project || !projectDialog) return;
+
+      document.getElementById("dialogCategory").textContent = project.category;
+      document.getElementById("dialogTitle").textContent = project.title;
+      document.getElementById("dialogDescription").textContent = project.description;
+      document.getElementById("dialogTechnology").textContent = project.technology;
+      document.getElementById("dialogStatus").textContent = project.status;
+
+      const featureList = document.getElementById("dialogFeatures");
+      featureList.replaceChildren();
+
+      project.features.forEach((feature) => {
+        const item = document.createElement("li");
+        item.textContent = feature;
+        featureList.appendChild(item);
+      });
+
+      if (typeof projectDialog.showModal === "function") {
+        projectDialog.showModal();
+        document.body.classList.add("modal-open");
+      } else {
+        window.alert(project.title + "\n\n" + project.description);
+      }
+    }
+
+    document.querySelectorAll("[data-project]").forEach((button) => {
+      button.addEventListener("click", () => {
+        openProject(button.dataset.project);
+      });
+    });
+
+    function closeProjectDialog() {
+      if (projectDialog && projectDialog.open) projectDialog.close();
+    }
+
+    if (closeDialogButton) closeDialogButton.addEventListener("click", closeProjectDialog);
+    if (doneDialogButton) doneDialogButton.addEventListener("click", closeProjectDialog);
+
+    if (projectDialog) {
+      projectDialog.addEventListener("click", (event) => {
+        if (event.target === projectDialog) closeProjectDialog();
+      });
+
+      projectDialog.addEventListener("close", () => {
+        document.body.classList.remove("modal-open");
+      });
+    }
+
+    const yearElement = document.getElementById("currentYear");
+    if (yearElement) yearElement.textContent = String(new Date().getFullYear());
+
+    const revealElements = document.querySelectorAll(".reveal");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    if ("IntersectionObserver" in window && !reduceMotion) {
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      revealElements.forEach((element) => revealObserver.observe(element));
+    } else {
+      revealElements.forEach((element) => element.classList.add("is-visible"));
+    }
+
+    // Keep this constant available for future project-specific links.
+    void GITHUB_PROFILE;
+  </script>
 </body>
 </html>
